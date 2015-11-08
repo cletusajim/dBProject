@@ -1,0 +1,68 @@
+CREATE TABLE users (
+  user_id INTEGER PRIMARY KEY,
+  user_name NOT NULL,
+  display_name NOT NULL,
+  user_password NOT NULL,
+  user_email NOT NULL
+);
+;
+
+INSERT INTO users (user_id, user_name, display_name, user_password, user_email)
+    VALUES (001, 'joe003', 'Joe Doe', '1qazxsw2', 'jdoe@gmail.com');
+
+SELECT * FROM users;
+DROP TABLE users;
+
+CREATE TABLE bugs (
+  bug_id INTEGER PRIMARY KEY,
+  bug_title VARCHAR NOT NULL,
+  bug_details NOT NULL,
+  bug_creator INTEGER NOT NULL REFERENCES users (user_id),
+  bug_create_date NOT NULL,
+  bug_type VARCHAR NOT NULL,
+  bug_severity INTEGER NOT NULL,
+  bug_status VARCHAR NOT NULL,
+  bug_closing_date,
+  bug_assignee INTEGER NOT NULL REFERENCES users (user_id)
+);
+
+INSERT INTO bugs (bug_id, bug_title, bug_details,
+                  bug_creator, bug_create_date, bug_type,
+                  bug_severity, bug_status, bug_closing_date, bug_assignee)
+    VALUES (0001, 'User could not login', '',CURRENT_DATE, 'Code', 4, '','','','' );
+
+SELECT * FROM bugs;
+
+DROP TABLE bugs;
+
+CREATE TABLE changes (
+  change_id INTEGER PRIMARY KEY,
+  change_text VARCHAR,
+  changerr_id INTEGER NOT NULL FOREIGN KEY REFERENCES users (user_id),
+  bug_id INTEGER FOREIGN KEY REFERENCES bugs (bug_id),
+  change_date DATE NOT NULL
+);
+
+SELECT * FROM changes;
+
+CREATE TABLE mentions (
+  mention_id INTEGER PRIMARY KEY,
+  mentionee_id INTEGER NOT NULL REFERENCES users (user_id),
+  mentioner_id INTEGER NOT NULL REFERENCES users (user_id),
+  bug_id INTEGER REFERENCES bugs (bug_id),
+  mention_date NOT NULL REFERENCES changes (change_date),
+  mention_text VARCHAR REFERENCES changes (change_text)
+);
+
+SELECT * FROM mentions;
+
+
+CREATE TABLE comments (
+  comment_id INTEGER PRIMARY KEY,
+  commentor_id INTEGER REFERENCES users (user_id),
+  bug_id INTEGER REFERENCES bugs (bug_id),
+  comment_text VARCHAR,
+  comment_date NOT NULL
+);
+
+SELECT * FROM comments;
